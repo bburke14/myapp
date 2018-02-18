@@ -2,6 +2,8 @@ import http.client
 import json
 
 
+token = "R4xSI35nV4pPoRC45N8bc9iUeIwN"
+
 conn = http.client.HTTPSConnection("api.digikey.com")
 
 obj = {
@@ -57,7 +59,7 @@ headers = {
     'x-digikey-locale-shiptocountry': "",
     'x-digikey-customer-id': "",
     'x-digikey-partner-id': "",
-    'authorization': "vOBzL2wJ0m32qVaP7fpXxdLR0grq"
+    'authorization': token
     }
 
 pay = json.dumps(obj)
