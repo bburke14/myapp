@@ -10,26 +10,10 @@ obj = {
   "SearchOptions": [
     "ChipOutpostOnly"
   ],
-  "Keywords": "p5555-nd",
+  "Keywords": "478-8910-2-ND",
   "RecordCount": "10",
   "RecordStartPosition": "0",
-  "Filters": {
-    "CategoryIds": [
-      24403983
-    ],
-    "FamilyIds": [
-      89948577
-    ],
-    "ManufacturerIds": [
-      85452177
-    ],
-    "ParametricFilters": [
-      {
-        "ParameterId": 35988788,
-        "ValueId": "206582788915200"
-      }
-    ]
-  },
+
   "Sort": {
     "Option": "SortByManufacturerPartNumber",
     "Direction": "Ascending",
