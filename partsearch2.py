@@ -2,17 +2,61 @@ import http.client
 import json
 import csv
 
+
+def partSearch(part_num):
+    digikey_part_num = {
+      "Part": part_num
+    }
+    encoded = json.dumps(digikey_part_num)
+
+    conn.request("POST", "/services/partsearch/v2/partdetails", encoded, headers)
+    res = conn.getresponse()
+    data = res.read()
+
+    result = json.loads(data)
+
+    pd = result["PartDetails"]
+    return pd
+
+def findDetails(pd):
+    tempList = []
+    for item in pd["Parameters"]:
+        tempList.append(item)
+    return tempList
+
+def readPartList():
+    tempList = []
+    with open('partlist.csv', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for i, line in enumerate(reader):
+            for key in line:
+                tempList.append(line[key])
+    return tempList
+
+def writeToCSV(pd, writer, detailList):
+    csvObj = {
+              'ManufacturerName': pd["ManufacturerName"],
+              'DKPartNumber': pd["DigiKeyPartNumber"],
+              'ProductDescription': pd["ProductDescription"],
+              'QuantityOnHand': pd["QuantityOnHand"],
+              'AvailableOnOrder': str(pd["AvailableOnOrder"]),
+              'UnitPrice': pd["UnitPrice"],
+              'ManufacturerLeadWeeks': pd["ManufacturerLeadWeeks"],
+              'StandardPackage': pd["StandardPackage"],
+              'MinimumOrderQuantity': pd["MinimumOrderQuantity"],
+              'Url': "www.digikey.com"+pd["PartUrl"]
+              }
+    for i in detailList:
+        csvObj[i["Parameter"]] = i["Value"]
+        
+    writer.writerow(csvObj)
+#'UnitPrice': pd["UnitPrice"],'ManufacturerLeadWeeks': pd["ManufacturerLeadWeeks"],'StandardPackage': pd["StandardPackage"],'MinimumOrderQuantity': pd["MinimumOrderQuantity"],
+
+part_num_list = readPartList()
+
 token = "R4xSI35nV4pPoRC45N8bc9iUeIwN"
 
 conn = http.client.HTTPSConnection("api.digikey.com")
-
-payload = "{\"Part\":\"arti\"}"
-
-digikey_part_num = {
-  "Part": "478-8630-2-ND"
-}
-encoded = json.dumps(digikey_part_num)
-
 
 headers = {
     'x-ibm-client-id': "c32a6a44-8532-4649-a426-ecd4b5ae7e54",
@@ -27,36 +71,15 @@ headers = {
     'authorization': token
     }
 
-conn.request("POST", "/services/partsearch/v2/partdetails", encoded, headers)
-
-res = conn.getresponse()
-data = res.read()
-
-result = json.loads(data)
-
-#print(result["PartDetails"])
-pd = result["PartDetails"]
-#print(result["PartDetails"]["PartUrl"])
-# print("Url:", pd["PartUrl"])
-# print("DigiKey Part Numer:", pd["DigiKeyPartNumber"])
-# print("Manufacturer Lead Weeks:", pd["ManufacturerLeadWeeks"])
-# print("Manufacturer Public Quantity:", pd["ManfacturerPublicQuantity"])
-# print("Available On Order:", pd["AvailableOnOrder"])
-
-file = open("partsearchdump.txt", "w")
-file.write("AvailableOnOrder: " + str(pd["AvailableOnOrder"]))
-
-# with open("partsearchdump2.csv", "w", newline="") as csvfile:
-#     fuck = csv.writer(csvfile, delimiter=" ",
-#                       quotechar = '|', quoting=csv.QUOTE_MINIMAL)
-#     fuck.writeheader()
-#     fuck.writerow({"AvailOnOrder": str(pd["AvailableOnOrder"])})
-#     fuck.writerow("AvailableOnOrder" + str(pd["AvailableOnOrder"]))
-
-with open('names.csv', 'w', newline='') as csvfile:
-    fieldnames = ['ManufacturerName', 'DKPartNumber', 'QuantityOnHand', 'AvailableOnOrder', 'Url']
+with open('partsearch3.csv', 'w', newline='') as csvfile:
+    fieldnames = ['ManufacturerName', 'DKPartNumber', 'ProductDescription', 'QuantityOnHand', 'AvailableOnOrder', 'UnitPrice', 'ManufacturerLeadWeeks', 'StandardPackage', 'MinimumOrderQuantity', 'Url', 'Packaging', 'Part Status', 'Capacitance', 'Tolerance', 'Voltage - Rated', 'Type', 'ESR (Equivalent Series Resistance)', 'Operating Temperature', 'Lifetime @ Temp.', 'Mounting Type', 'Package / Case', 'Size / Dimension', 'Height - Seated (Max)', 'Lead Spacing', 'Manufacturer Size Code', 'Features', 'Failure Rate', 'Notification']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
     writer.writeheader()
-    writer.writerow({'ManufacturerName': pd["ManufacturerName"], 'DKPartNumber': pd["DigiKeyPartNumber"], 'QuantityOnHand': pd["QuantityOnHand"], 'AvailableOnOrder': str(pd["AvailableOnOrder"]), 'Url': "www.digikey.com"+pd["PartUrl"]})
+
+    for part in part_num_list:
+        res = partSearch(part)
+        detailList = findDetails(res)
+        writeToCSV(res, writer, detailList)
+        findDetails(res)
+
 #'QuantityOnHand': pd["QuantityOnHand"],
