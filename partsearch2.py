@@ -40,6 +40,7 @@ def writeToCSV(pd, writer, detailList):
               'ProductDescription': pd["ProductDescription"],
               'QuantityOnHand': pd["QuantityOnHand"],
               'AvailableOnOrder': str(pd["AvailableOnOrder"]),
+              'ManfacturerPublicQuantity': pd["ManfacturerPublicQuantity"],
               'UnitPrice': pd["UnitPrice"],
               'ManufacturerLeadWeeks': pd["ManufacturerLeadWeeks"],
               'StandardPackage': pd["StandardPackage"],
@@ -48,13 +49,13 @@ def writeToCSV(pd, writer, detailList):
               }
     for i in detailList:
         csvObj[i["Parameter"]] = i["Value"]
-        
+
     writer.writerow(csvObj)
 #'UnitPrice': pd["UnitPrice"],'ManufacturerLeadWeeks': pd["ManufacturerLeadWeeks"],'StandardPackage': pd["StandardPackage"],'MinimumOrderQuantity': pd["MinimumOrderQuantity"],
 
 part_num_list = readPartList()
 
-token = "R4xSI35nV4pPoRC45N8bc9iUeIwN"
+token = "DRSAL9Fi3NAJOpsh8o1LMIZzfTTJ"
 
 conn = http.client.HTTPSConnection("api.digikey.com")
 
@@ -72,7 +73,7 @@ headers = {
     }
 
 with open('partsearch3.csv', 'w', newline='') as csvfile:
-    fieldnames = ['ManufacturerName', 'DKPartNumber', 'ProductDescription', 'QuantityOnHand', 'AvailableOnOrder', 'UnitPrice', 'ManufacturerLeadWeeks', 'StandardPackage', 'MinimumOrderQuantity', 'Url', 'Packaging', 'Part Status', 'Capacitance', 'Tolerance', 'Voltage - Rated', 'Type', 'ESR (Equivalent Series Resistance)', 'Operating Temperature', 'Lifetime @ Temp.', 'Mounting Type', 'Package / Case', 'Size / Dimension', 'Height - Seated (Max)', 'Lead Spacing', 'Manufacturer Size Code', 'Features', 'Failure Rate', 'Notification']
+    fieldnames = ['ManufacturerName', 'DKPartNumber', 'ProductDescription', 'QuantityOnHand', 'AvailableOnOrder', 'ManfacturerPublicQuantity', 'UnitPrice', 'ManufacturerLeadWeeks', 'StandardPackage', 'MinimumOrderQuantity', 'Url', 'Packaging', 'Part Status', 'Capacitance', 'Tolerance', 'Voltage - Rated', 'Type', 'ESR (Equivalent Series Resistance)', 'Operating Temperature', 'Lifetime @ Temp.', 'Mounting Type', 'Package / Case', 'Size / Dimension', 'Height - Seated (Max)', 'Lead Spacing', 'Manufacturer Size Code', 'Features', 'Failure Rate', 'Notification', 'Applications', 'Temperature Coefficient', 'Thickness (Max)', 'Lead Style', 'Ratings']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
 
