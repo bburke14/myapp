@@ -11,6 +11,8 @@ soup = BeautifulSoup(html, 'html.parser')
 table = soup.find('table', attrs={'id': 'productTable'})
 
 rows = table.findChildren('tr')
+outfile = open('.\digikeyscrape2.csv', 'wb')
+#writer = csv.writer(outfile, delimiter=' ', quotechar=' ', quoting=csv.QUOTE_MINIMAL)
 
 list_of_rows = []
 for row in rows:
@@ -19,11 +21,18 @@ for row in rows:
     for cell in cells:
         cell_content = cell.getText()
         clean_content = re.sub( '\s+', ' ', cell_content).strip()
-        print(clean_content)
+        if clean_content != '':
+            list_of_cells.append(clean_content)
+    list_of_rows.append(list_of_cells)
 
-outfile = open('.\digikeyscrape2.csv', 'w')
-writer = csv.writer(outfile)
-writer.writerows(clean_content)
+
+
+with open('.\digikeyscrape2.csv', 'w') as csvfile:
+    writer = csv.writer(csvfile)
+    for item in list_of_rows:
+        print(item)
+        writer.writerow(item)
+
 
 # list_of_rows = []
 # for row in table.findAll('tr')[1:]:
@@ -42,7 +51,7 @@ writer.writerows(clean_content)
 # print(desc)
 #
 #
-# outfile = open('.\digikeyscrape2.csv', 'w')
+#  = open('.\digikeyscrape2.csv', 'w')
 # writer = csv.writer(outfile)
 # writer.writerows(list_of_rows)
 
