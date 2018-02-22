@@ -10,9 +10,19 @@ soup = BeautifulSoup(html, 'html.parser')
 
 table = soup.find('table', attrs={'id': 'productTable'})
 
+headers = table.findChildren('th')
+
+header_list = []
+for header in headers:
+    header_content = header.getText()
+    clean_headers = re.sub( '\r\n', ' ', header_content).strip()
+    clean_headers2 = re.sub( '\n\n', ' ', clean_headers).strip()
+    header_list.append(clean_headers2)
+
+print(header_list)
+
 rows = table.findChildren('tr')
 outfile = open('.\digikeyscrape2.csv', 'wb')
-#writer = csv.writer(outfile, delimiter=' ', quotechar=' ', quoting=csv.QUOTE_MINIMAL)
 
 list_of_rows = []
 for row in rows:
@@ -28,31 +38,7 @@ for row in rows:
 
 
 with open('.\digikeyscrape2.csv', 'w') as csvfile:
-    writer = csv.writer(csvfile)
+    writer = csv.writer(csvfile, lineterminator = "\n")
+    writer.writerow(header_list)
     for item in list_of_rows:
-        print(item)
         writer.writerow(item)
-
-
-# list_of_rows = []
-# for row in table.findAll('tr')[1:]:
-
-
-#     list_of_cells = []
-#     cellz = row.findAll('td', attrs={'class': 'tr-description'})
-#     for cell in row.findAll('a'):
-#         text = cell.text.replace('&nbsp', '')
-#         list_of_cells.append(text)
-#
-#
-#
-#     list_of_rows.append(list_of_cells)
-# desc = soup.findAll('td', attrs={'class': 'tr-description'})
-# print(desc)
-#
-#
-#  = open('.\digikeyscrape2.csv', 'w')
-# writer = csv.writer(outfile)
-# writer.writerows(list_of_rows)
-
-# print(list_of_rows)
