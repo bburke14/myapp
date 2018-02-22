@@ -17,7 +17,10 @@ for header in headers:
     header_content = header.getText()
     clean_headers = re.sub( '\r\n', ' ', header_content).strip()
     clean_headers2 = re.sub( '\n\n', ' ', clean_headers).strip()
-    header_list.append(clean_headers2)
+    if clean_headers2 != '':
+        if clean_headers2 != 'Compare Parts':
+            if clean_headers2 != 'Image':
+                header_list.append(clean_headers2)
 
 print(header_list)
 
