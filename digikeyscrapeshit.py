@@ -3,10 +3,12 @@ import requests
 import csv
 import re
 
-url = 'https://www.digikey.com/products/en/capacitors/tantalum-capacitors/59?k=&pkeyword=&FV=ffe0003b%2Cfffc018f&quantity=0&ColumnSort=0&page=1&pageSize=500'
+url = 'https://www.digikey.com/products/en/capacitors/tantalum-capacitors/59?k=&pkeyword=&pv7=2&pv1989=0&FV=fffc018f%2Cffe0003b&quantity=0&ColumnSort=0&page=1&pageSize=500'
 response = requests.get(url)
 html = response.content
 soup = BeautifulSoup(html, 'html.parser')
+
+
 
 table = soup.find('table', attrs={'id': 'productTable'})
 
