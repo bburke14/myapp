@@ -15,15 +15,33 @@ def readUrlList():
 url_list = readUrlList()
 print(url_list)
 
-
-def scrape_baby_scrape(url):
-    url = 'https://www.digikey.com/products/en/capacitors/tantalum-capacitors/59?k=&pkeyword=&pv7=2&pv1989=0&FV=fffc018f%2Cffe0003b&quantity=0&ColumnSort=0&page=1&pageSize=500'
+def get_dem_headers(url):
     response = requests.get(url)
     html = response.content
     soup = BeautifulSoup(html, 'html.parser')
 
     table = soup.find('table', attrs={'id': 'productTable'})
+    headers = table.findChildren('th')
 
+    header_list = []
+    for header in headers:
+        header_content = header.getText()
+        clean_headers = re.sub( '\r\n', ' ', header_content).strip()
+        clean_headers2 = re.sub( '\n\n', ' ', clean_headers).strip()
+        if clean_headers2 != '':
+            if clean_headers2 != 'Compare Parts':
+                if clean_headers2 != 'Image':
+                    header_list.append(clean_headers2)
+    return header_list
+
+
+
+def scrape_baby_scrape(url):
+    response = requests.get(url)
+    html = response.content
+    soup = BeautifulSoup(html, 'html.parser')
+
+    table = soup.find('table', attrs={'id': 'productTable'})
     rows = table.findChildren('tr')
     outfile = open('.\digikeyscrape2.csv', 'wb')
 
@@ -37,12 +55,17 @@ def scrape_baby_scrape(url):
             if clean_content != '':
                 list_of_cells.append(clean_content)
         list_of_rows.append(list_of_cells)
-    return
+    print(list_of_rows)
 
+def write_to_csv(url):
+    for item in list_of_rows:
+        writer.writerow(item)
 
 
 with open('.\digikeyscrape3.csv', 'w') as csvfile:
     writer = csv.writer(csvfile, lineterminator = "\n")
-    writer.writerow(header_list)
 
-    #for url in url_list:
+
+    for url in url_list:
+        res = scrape_baby_scrape(url)
+        write_to_csv(res)
