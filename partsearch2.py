@@ -55,7 +55,7 @@ def writeToCSV(pd, writer, detailList):
 
 part_num_list = readPartList()
 
-token = "ZkXEn68gkabmAxZs2PXLQYhmuZkh"
+token = "5KS5i0EDNQFPH3N6JrRdfBq8LkAr"
 
 conn = http.client.HTTPSConnection("api.digikey.com")
 
