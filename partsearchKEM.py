@@ -1,8 +1,10 @@
 import http.client
 import json
 import csv
+from ratelimit import rate_limited
 
 
+@rate_limited(1)
 def partSearch(part_num):
     digikey_part_num = {
       "Part": part_num
