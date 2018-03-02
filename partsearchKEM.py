@@ -2,9 +2,10 @@ import http.client
 import json
 import csv
 from ratelimit import rate_limited
+import requests
 
 
-@rate_limited(1)
+@rate_limited(2)
 def partSearch(part_num):
     digikey_part_num = {
       "Part": part_num
@@ -57,7 +58,7 @@ def writeToCSV(pd, writer, detailList):
 
 part_num_list = readPartList()
 
-token = "Gygf1ZyCiuZb3sS7bRh71UiTfGeq"
+token = "gpjRSQilbOowenaWuOSCRsVkSbWa"
 
 conn = http.client.HTTPSConnection("api.digikey.com")
 
