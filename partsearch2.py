@@ -3,6 +3,8 @@ import json
 import csv
 
 
+
+
 def partSearch(part_num):
     digikey_part_num = {
       "Part": part_num
