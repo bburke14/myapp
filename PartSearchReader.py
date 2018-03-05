@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import csv
 import re
-import http.client
+import http.client, urllib.parse
 import json
 
 class PartSearchReader:
@@ -46,10 +46,17 @@ class PartSearchReader:
 
         counter = 0
         for h in list_of_headers:
-            dic[h] = list_of_cells[counter]
+            if h == 'Quantity Available':
+                temp = list_of_cells[counter]
+                if temp[0] == '0':
+                    dic[h] = '0'
+                else:
+                    dic[h] = list_of_cells[counter]
+            else:
+                dic[h] = list_of_cells[counter]
             counter = counter + 1
-
         return dic
+
 
     def scrapeRightCol(self, soup, dic):
         content = soup.find('div', attrs={'id': 'pdp_content'})
@@ -89,17 +96,33 @@ class PartSearchReader:
             return True
 
     def makeLeadTimeRequest(self, dic, part_id):
-         headers = {"Content-type": "application/x-www-form-urlencoded"}
-         conn = http.client.HTTPSConnection("www.digikey.com")
-         tempJSON = {
-            "language":"en",
-            "partid": part_id,
-            "quantity": dic['Price Break']
-         }
-         params = json.dumps(tempJSON)
-         conn.request("POST", "/product-detail/leadtime/en/", params, headers)
-         response = conn.getresponse()
-         print(response)
+        url = "https://www.digikey.com/product-detail/leadtime/en/"
+        quantity = dic['Price Break']
+        quantity = quantity.replace(',', '')
+        payload = "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"language\"\r\n\r\nen\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"partid\"\r\n\r\n" + str(part_id) + "\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"quantity\"\r\n\r\n" + str(quantity) + "\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--"
+        headers = {
+        'content-type': "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
+        'Cache-Control': "no-cache",
+        'Postman-Token': "5e45fd65-e678-1653-11f3-8af451116857"
+        }
+
+        response = requests.request("POST", url, data=payload, headers=headers)
+
+        return response.text
+
+
+    def getShipDate(self, dic, html):
+        soup = BeautifulSoup(html, 'html.parser')
+        ship = soup.find('table', attrs={'id': 'leadTimeTable'})
+
+        rows = ship.find_all('tr')
+        headers = rows[1].find_all('td')
+        val = headers[1].get_text()
+
+        if val != '*':
+            dic['Ship Date Estimate'] = val
+
+        return dic
 
 
     def filterHeaders(self, dic):

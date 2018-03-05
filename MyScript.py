@@ -4,16 +4,18 @@ headers = ['Digi-Key Part Number', 'Quantity Available', 'Manufacturer Part Numb
 
 searcher = PartSearchReader(headers)
 url_list = searcher.readUrlListFromCSV('test_list_of_urls.csv')
-tempDic = {}
+tempDic = dict()
 list_of_parts = []
 for url in url_list:
     soup = searcher.getSoupData(url)
-    tempDic = searcher.scrapeTopHalf(soup, tempDic)
+    d = {}
+    tempDic = searcher.scrapeTopHalf(soup, d)
     tempDic = searcher.scrapeRightCol(soup, tempDic)
 
     if searcher.available(tempDic) == False:
         part_id = searcher.scrapePartId(soup, tempDic)
-        tempDic = searcher.makeLeadTimeRequest(tempDic, part_id)
+        shipDateHtml = searcher.makeLeadTimeRequest(tempDic, part_id)
+        tempDic = searcher.getShipDate(tempDic, shipDateHtml)
 
     list_of_parts.append(searcher.filterHeaders(tempDic))
 
